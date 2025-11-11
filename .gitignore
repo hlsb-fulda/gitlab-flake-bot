@@ -1,0 +1,11 @@
+/result
+/.envrc
+/.direnv
+/.idea
+
+/config.toml
+/cache
+
+__pycache__/
+*.py[codz]
+*$py.class
