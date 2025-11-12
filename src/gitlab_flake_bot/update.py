@@ -1,4 +1,3 @@
-import enum
 import json
 from typing import Optional
 
@@ -8,23 +7,9 @@ from munch import munchify
 
 from .flake import Input
 from .repos import Repository
-from .settings import settings, Settings
+from .settings import settings, Settings, RuleSettings
 from .platform import gl
-from .utils import gitlab_try, match_any
-
-
-class State(enum.Enum):
-    PENDING = 1
-    CREATED = 2
-    RUNNING = 3
-    MANUAL = 4
-    SUCCEEDED = 5
-    FAILED = 6
-
-
-class UpdateKind(enum.Enum):
-    DIGEST = "digest"
-    BRANCH = "branch"
+from .utils import gitlab_try, match_any, coalesce
 
 
 def process_project(project: Project, settings: Settings, log: structlog.BoundLogger):
@@ -59,24 +44,16 @@ def process_project(project: Project, settings: Settings, log: structlog.BoundLo
             log.debug("Input ignored by rule - skipping")
             continue
 
-        if not rule.digest.enable and not rule.branch.enable:
-            log.debug("No update type enabled for input - skipping")
-            continue
+        log.debug("Processing input...")
 
-        log.info(f"Processing input '{input.key}'")
-
-        if rule.digest.enable:
-            process_input(repository, input, UpdateKind.DIGEST, log)
-
-        if rule.branch.enable:
-            pass
+        process_input(repository, input, rule, log)
 
 
-def process_input(repository: Repository, input: Input, kind: UpdateKind, log: structlog.BoundLogger):
+def process_input(repository: Repository, input: Input, rule: RuleSettings, log: structlog.BoundLogger):
     base_branch_name = repository.project.default_branch
     base_branch_commit = find_branch_head(repository.project, base_branch_name)
 
-    branch_name = f"{getattr(settings, kind.value).branch_prefix}{input.key}"
+    branch_name = f"{settings.branch_prefix}{input.key}"
     branch_commit = find_branch_head(repository.project, branch_name)
 
     repository.git.fetch("origin", base_branch_name)
@@ -117,7 +94,7 @@ def process_input(repository: Repository, input: Input, kind: UpdateKind, log: s
 
         input.new = new_metadata.locks.nodes[input.name]
 
-        message = settings.digest.message.format_map(input.__dict__)
+        message = settings.commit_message.format_map(input.__dict__)
 
         repository.git.add(".")
         repository.git.commit(message=message, no_signoff=True, no_verify=True, no_gpg_sign=True)
@@ -162,12 +139,15 @@ def process_input(repository: Repository, input: Input, kind: UpdateKind, log: s
 
         input.new = new_metadata.locks.nodes[input.name]
 
-        message = settings.digest.message.format_map(input.__dict__)
+        message = settings.commit_message.format_map(input.__dict__)
 
         repository.git.add(".")
         repository.git.commit(message=message, no_signoff=True, no_verify=True, no_gpg_sign=True)
         repository.git.push("origin", f"HEAD:refs/heads/{branch_name}", force=True)
 
+        return
+
+    if not coalesce(rule.auto_merge, settings.auto_merge):
         return
 
     if merge_request.detailed_merge_status != "mergeable":

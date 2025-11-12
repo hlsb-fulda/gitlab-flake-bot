@@ -12,3 +12,11 @@ def gitlab_try(func, *args, **kwargs):
         return func(*args, **kwargs)
     except GitlabError:
         return None
+
+
+def coalesce(*args):
+    for arg in args:
+        if arg is not None:
+            return arg
+
+    return None

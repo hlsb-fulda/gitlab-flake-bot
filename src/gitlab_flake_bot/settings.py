@@ -13,13 +13,6 @@ class GitLabSettings(BaseSettings):
     api_token: Optional[str] = Field(default=None)
 
 
-class UpdateSettings(BaseModel):
-    enable: bool = Field(default=True)
-    auto_merge: bool = Field(default=False)
-
-    interval: Optional[str] = Field(default=None)
-
-
 class RuleSettings(BaseModel):
     projects: list[str] = Field(default=["*"])
     inputs: list[str] = Field(default=["*"])
@@ -27,15 +20,7 @@ class RuleSettings(BaseModel):
     ignore: bool = Field(default=False)
 
     interval: Optional[str] = Field(default=None)
-
-    digest: UpdateSettings = Field(default_factory=UpdateSettings)
-    branch: UpdateSettings = Field(default_factory=UpdateSettings)
-
-
-class MergeRequestSettings(BaseModel):
-    message: str = Field()
-    branch_prefix: str = Field()
-    auto_merge: bool = Field(default=False)
+    auto_merge: Optional[bool] = Field(default=None)
 
 
 class Settings(BaseSettings):
@@ -48,10 +33,9 @@ class Settings(BaseSettings):
     projects: list[str] = Field(default=["*"])
     rules: list[RuleSettings] = Field(default_factory=list)
 
+    commit_message: str = Field()
     branch_prefix: str = Field(default="deps/")
-
-    digest: MergeRequestSettings = Field()
-    branch: MergeRequestSettings = Field()
+    auto_merge: bool = Field(default=False)
 
     model_config = SettingsConfigDict(toml_file="config.toml")
 
