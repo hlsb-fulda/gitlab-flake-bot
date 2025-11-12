@@ -3,11 +3,11 @@
   hatchling,
   structlog,
   pydantic,
-  pydantic-settings,
   python-gitlab,
   sh,
   munch,
   pytimeparse2,
+  typer,
   pytestCheckHook,
   ...
 }:
@@ -25,11 +25,11 @@ buildPythonApplication {
     [
       structlog
       pydantic
-      pydantic-settings
       python-gitlab
       sh
       munch
       pytimeparse2
+      typer
     ];
 
   pythonImportsCheck = [ "gitlab_flake_bot" ];
