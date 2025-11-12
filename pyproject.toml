@@ -13,6 +13,7 @@ dependencies = [
     "python-gitlab>=6.4.0",
     "sh>=2.2.2",
     "munch>=4.0.0",
+    "timelength>=3.0.2",
 ]
 
 [project.scripts]

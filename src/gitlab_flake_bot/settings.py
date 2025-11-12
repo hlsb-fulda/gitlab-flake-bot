@@ -1,11 +1,23 @@
 from pathlib import Path
-from typing import Optional, Type, Tuple
+from typing import Optional, Type, Tuple, Any, Self
 
+import timelength
 from pydantic import (
     BaseModel,
     Field,
+    GetCoreSchemaHandler,
 )
+from pydantic_core import core_schema
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource, TomlConfigSettingsSource, CliApp
+
+
+class Duration(timelength.TimeLength):
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source: type[Any], handler: GetCoreSchemaHandler):
+        return core_schema.no_info_after_validator_function(
+            timelength.TimeLength,
+            core_schema.str_schema(min_length=1),
+        )
 
 
 class GitLabSettings(BaseSettings):
@@ -19,7 +31,7 @@ class RuleSettings(BaseModel):
 
     ignore: bool = Field(default=False)
 
-    interval: Optional[str] = Field(default=None)
+    interval: Optional[Duration] = Field(default=None)
     auto_merge: Optional[bool] = Field(default=None)
 
 
@@ -28,7 +40,7 @@ class Settings(BaseSettings):
 
     cache: Path = Field(default="/var/cache/gitlab-flake-bot")
 
-    interval: str = Field(default="5min")
+    interval: Optional[Duration] = Field(default="5min")
 
     projects: list[str] = Field(default=["*"])
     rules: list[RuleSettings] = Field(default_factory=list)

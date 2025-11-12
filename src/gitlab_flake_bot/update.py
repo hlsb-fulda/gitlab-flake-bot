@@ -1,5 +1,7 @@
+import datetime
 import json
 from typing import Optional
+from datetime import datetime
 
 import structlog
 from gitlab.v4.objects import Project, ProjectCommit, MergeRequest
@@ -42,6 +44,13 @@ def process_project(project: Project, settings: Settings, log: structlog.BoundLo
         rule = input.find_rule(settings.rules)
         if rule.ignore:
             log.debug("Input ignored by rule - skipping")
+            continue
+
+        # Check if input has been modified less than `interval` time ago
+        last_modified = datetime.fromtimestamp(input.old.locked.lastModified)
+        interval = coalesce(rule.interval, settings.interval)
+        if interval is not None and last_modified + interval > datetime.now():
+            log.debug("Input has been modified to recent - skipping", last_modified=last_modified, interval=interval)
             continue
 
         log.debug("Processing input...")
