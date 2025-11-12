@@ -6,10 +6,10 @@ import structlog
 from gitlab.v4.objects import Project, ProjectCommit, MergeRequest
 from munch import munchify
 
+from . import platform
 from .flake import Input
 from .repos import Repository
 from .settings import settings, Settings, RuleSettings
-from .platform import gl
 from .utils import gitlab_try, match_any, coalesce
 
 
@@ -79,7 +79,7 @@ def process_input(repository: Repository, input: Input, rule: RuleSettings, log:
         repository.git.checkout("-B", branch_name, "--")
         repository.git.reset(branch_commit.id, hard=True)
 
-    if branch_commit.author_name != gl.user.name or branch_commit.author_email != gl.user.commit_email:
+    if branch_commit.author_name != platform.client.user.name or branch_commit.author_email != platform.client.user.commit_email:
         log.info("Last commit on branch was not created by this bot - skipping")
         return
 

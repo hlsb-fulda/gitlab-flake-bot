@@ -9,7 +9,7 @@ import sh
 from gitlab.v4.objects import Project
 from urllib.parse import urlparse, urlunparse
 
-from .platform import gl
+from . import platform
 from .settings import settings
 
 
@@ -63,8 +63,8 @@ class Repository:
     @property
     def git(self):
         env = os.environ.copy()
-        env["GIT_AUTHOR_NAME"] = gl.user.name
-        env["GIT_AUTHOR_EMAIL"] = gl.user.commit_email
+        env["GIT_AUTHOR_NAME"] = platform.client.user.name
+        env["GIT_AUTHOR_EMAIL"] = platform.client.user.commit_email
 
         return sh.git.bake(_cwd=self.path, _env=env)
 
@@ -72,23 +72,6 @@ class Repository:
     def nix(self):
         return sh.nix.bake(_cwd=self.path)
 
-    # def reset(self):
-    #     self.git.reset(f"refs/remotes/origin/{self.project.default_branch}", hard=True)
-    #
-    # def checkout(self, branch):
-    #     self.git.reset(f"refs/remotes/origin/{branch}", hard=True)
-
     def is_dirty(self):
         diff = self.git.diff(quiet=True, exit_code=True, _ok_code=[0, 1], _return_cmd=True)
         return diff.exit_code != 0
-
-    # def commit(self, message):
-    #     self.git.add(".")
-    #     self.git.commit(message=message, no_signoff=True, no_verify=True, no_gpg_sign=True)
-    #
-    # def squash(self, base_branch):
-    #     self.git.
-    #
-    #
-    # def push(self, branch):
-    #     self.git.push("origin", f"HEAD:refs/heads/{branch}", force=True)

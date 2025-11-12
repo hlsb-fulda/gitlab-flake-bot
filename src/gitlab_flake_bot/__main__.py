@@ -1,16 +1,24 @@
-import structlog
+from pathlib import Path
 
+import structlog
+import typer
+
+from . import platform
 from .settings import settings
-from .platform import gl
 from .update import process_project
 
 
-def main():
+@typer.run
+def main(config: Path = typer.Option("config.toml", help="Path to configuration file")):
+    settings.load(config)
+
     log = structlog.get_logger()
 
-    gl.auth()
+    platform.client.auth()
 
-    for project in gl.projects.list(iterator=True, membership=True, with_merge_requests_enabled=True, archived=False, min_access_level=30):
+    for project in platform.client.projects.list(
+        iterator=True, membership=True, with_merge_requests_enabled=True, archived=False, min_access_level=30
+    ):
         log = log.bind(project=project.path_with_namespace)
 
         try:
