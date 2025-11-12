@@ -1,8 +1,13 @@
 {
   buildPythonApplication,
   hatchling,
+  structlog,
   pydantic,
-  prometheus-client,
+  pydantic-settings,
+  python-gitlab,
+  sh,
+  munch,
+  pytimeparse2,
   pytestCheckHook,
   ...
 }:
@@ -18,15 +23,19 @@ buildPythonApplication {
 
   dependencies =
     [
+      structlog
       pydantic
-      prometheus-client
+      pydantic-settings
+      python-gitlab
+      sh
+      munch
+      pytimeparse2
     ];
 
-  pythonImportsCheck = [ "gitlab-flake-bot" ];
+  pythonImportsCheck = [ "gitlab_flake_bot" ];
 
   doCheck = true;
 
   nativeCheckInputs = [
-    pytestCheckHook
   ];
 }
