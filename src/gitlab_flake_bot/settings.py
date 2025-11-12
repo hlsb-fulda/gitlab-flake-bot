@@ -1,7 +1,8 @@
 from pathlib import Path
-from typing import Optional, Type, Tuple, Any, Self
+from typing import Optional, Type, Tuple, Any
+from datetime import timedelta
 
-import timelength
+import pytimeparse2 as timeparse
 from pydantic import (
     BaseModel,
     Field,
@@ -11,11 +12,11 @@ from pydantic_core import core_schema
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource, TomlConfigSettingsSource, CliApp
 
 
-class Duration(timelength.TimeLength):
+class Duration(timedelta):
     @classmethod
     def __get_pydantic_core_schema__(cls, source: type[Any], handler: GetCoreSchemaHandler):
         return core_schema.no_info_after_validator_function(
-            timelength.TimeLength,
+            lambda s: timeparse.parse(s, raise_exception=True, as_timedelta=True),
             core_schema.str_schema(min_length=1),
         )
 

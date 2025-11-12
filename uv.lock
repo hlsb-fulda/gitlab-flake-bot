@@ -83,9 +83,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-gitlab" },
+    { name = "pytimeparse2" },
     { name = "sh" },
     { name = "structlog" },
-    { name = "timelength" },
 ]
 
 [package.dev-dependencies]
@@ -98,12 +98,12 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "munch", specifier = ">=4.0.0" },
-    { name = "pydantic", specifier = ">=2.11.0" },
-    { name = "pydantic-settings", specifier = ">=2.11.0" },
-    { name = "python-gitlab", specifier = ">=6.4.0" },
+    { name = "pydantic", specifier = ">=2.8.1" },
+    { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "python-gitlab", specifier = ">=5.6.0" },
+    { name = "pytimeparse2", specifier = ">=1.7.1" },
     { name = "sh", specifier = ">=2.2.2" },
     { name = "structlog", specifier = ">=25.4.0" },
-    { name = "timelength", specifier = ">=3.0.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -263,6 +263,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pytimeparse2"
+version = "1.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/10/cc63fecd69905eb4d300fe71bd580e4a631483e9f53fdcb8c0ad345ce832/pytimeparse2-1.7.1.tar.gz", hash = "sha256:98668cdcba4890e1789e432e8ea0059ccf72402f13f5d52be15bdfaeb3a8b253", size = 10431, upload-time = "2023-05-11T21:40:55.774Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/9e/85abf91ef5df452f56498927affdb7128194d15644084f6c6722477c305b/pytimeparse2-1.7.1-py3-none-any.whl", hash = "sha256:a162ea6a7707fd0bb82dd99556efb783935f51885c8bdced0fce3fffe85ab002", size = 6136, upload-time = "2023-05-11T21:40:46.051Z" },
+]
+
+[[package]]
 name = "pywin32"
 version = "311"
 source = { registry = "https://pypi.org/simple" }
@@ -360,15 +369,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/d7/e5/807161552b8bf7072d63a21d5fd3c7df54e29420e325d50b9001571fcbb6/testcontainers-4.13.0.tar.gz", hash = "sha256:ee2bc39324eeeeb710be779208ae070c8373fa9058861859203f536844b0f412", size = 77824, upload-time = "2025-09-09T13:23:49.976Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/12/a2/ec749772b9d0fcc659b1722858f463a9cbfc7e29aca374123fb87e87fc1d/testcontainers-4.13.0-py3-none-any.whl", hash = "sha256:784292e0a3f3a4588fbbf5d6649adda81fea5fd61ad3dc73f50a7a903904aade", size = 123838, upload-time = "2025-09-09T13:23:48.375Z" },
-]
-
-[[package]]
-name = "timelength"
-version = "3.0.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/43/4b/5850b780013015991b193a2d9c5a6a592452b3449849e3f12aa96b21a159/timelength-3.0.2.tar.gz", hash = "sha256:ee0d84e1885070be4b211a943ff8ab60cf25371a14147f090873ce933ed3ad40", size = 38508, upload-time = "2025-05-20T02:17:22.977Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/bc/67/645a21f4a7313706eaf3e2794355283109216acfe937ec4d9fb040cf445e/timelength-3.0.2-py3-none-any.whl", hash = "sha256:c849f275f3bf5b5e5df1ef52f47a6f0d11e8b531ebcc0dc8d08c17e95c68aeb3", size = 37275, upload-time = "2025-05-20T02:17:21.738Z" },
 ]
 
 [[package]]
