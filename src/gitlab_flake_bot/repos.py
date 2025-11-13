@@ -33,7 +33,7 @@ class Repository:
         path = cache / hash
 
         url = urlparse(project.http_url_to_repo)
-        url = url._replace(netloc=f"gitlab-ci-token:{settings.gitlab.api_token}@{url.netloc}")
+        url = url._replace(netloc=f"gitlab-ci-token:{settings.gitlab.api_token_text}@{url.netloc}")
         url = urlunparse(url)
 
         # We move the currently existing repository to a backup location but use it as a reference while cloning the latest
@@ -70,7 +70,17 @@ class Repository:
 
     @property
     def nix(self):
-        return sh.nix.bake(_cwd=self.path)
+        url = urlparse(settings.gitlab.url)
+
+        env = os.environ.copy()
+        env["NIX_CONFIG"] = "\n".join(
+            [
+                "experimental-features = nix-command flakes",
+                f"extra-access-tokens = {url.hostname}=PAT:{settings.gitlab.api_token_text}",
+            ]
+        )
+
+        return sh.nix.bake(_cwd=self.path, _env=env)
 
     def is_dirty(self):
         diff = self.git.diff(quiet=True, exit_code=True, _ok_code=[0, 1], _return_cmd=True)

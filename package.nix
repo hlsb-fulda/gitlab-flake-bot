@@ -9,6 +9,8 @@
   pytimeparse2,
   typer,
   pytestCheckHook,
+  git,
+  nix,
   ...
 }:
 
@@ -31,6 +33,11 @@ buildPythonApplication {
       pytimeparse2
       typer
     ];
+
+  makeWrapperArgs = [
+    "--prefix PATH : ${git}/bin"
+    "--prefix PATH : ${nix}/bin"
+  ];
 
   pythonImportsCheck = [ "gitlab_flake_bot" ];
 

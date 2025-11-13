@@ -9,6 +9,7 @@ from pydantic import (
     BaseModel,
     Field,
     GetCoreSchemaHandler,
+    computed_field,
 )
 
 
@@ -34,9 +35,22 @@ class Duration(timedelta):
         raise ValueError(f"Invalid duration type: {type(v).__name__!r} (expected timedelta, int, float, or str)")
 
 
+class Secret(BaseModel):
+    file: Path = Field(default=None)
+
+
 class GitLabSettings(BaseModel):
     url: str = Field(default="https://gitlab.com")
-    api_token: Optional[str] = Field(default=None)
+
+    api_token: Optional[str | Secret] = Field(default=None)
+
+    @computed_field
+    @property
+    def api_token_text(self) -> str:
+        if isinstance(self.api_token, Secret):
+            self.api_token = self.api_token.file.read_text()
+
+        return self.api_token
 
 
 class RuleSettings(BaseModel):

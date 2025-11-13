@@ -14,8 +14,6 @@ def main(config: Path = typer.Option("config.toml", help="Path to configuration 
 
     log = structlog.get_logger()
 
-    platform.client.auth()
-
     for project in platform.client.projects.list(
         iterator=True, membership=True, with_merge_requests_enabled=True, archived=False, min_access_level=30
     ):
