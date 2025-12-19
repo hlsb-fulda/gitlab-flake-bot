@@ -20,7 +20,7 @@ def process_project(project: Project, settings: Settings, log: structlog.BoundLo
         log.debug("Project does not match 'projects' filter - skipping")
         return
 
-    log.info("Cloning repository: {project.http_url_to_repo}")
+    log.info(f"Cloning repository: {project.http_url_to_repo}")
     repository = Repository.clone(project)
 
     if not (repository.path / "flake.nix").exists():
@@ -79,9 +79,9 @@ def process_input(repository: Repository, input: Input, rule: RuleSettings, log:
         repository.git.checkout("-B", branch_name, "--")
         repository.git.reset(branch_commit.id, hard=True)
 
-    if branch_commit.author_name != platform.client.user.name or branch_commit.author_email != platform.client.user.commit_email:
-        log.info("Last commit on branch was not created by this bot - skipping")
-        return
+        if branch_commit.author_name != platform.client.user.name or branch_commit.author_email != platform.client.user.commit_email:
+            log.info("Last commit on branch was not created by this bot - skipping")
+            return
 
     # Update flake input
     repository.nix.flake.update(input.name)
