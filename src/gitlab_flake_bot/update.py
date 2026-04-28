@@ -38,7 +38,7 @@ def process_project(project: Project, settings: Settings, log: structlog.BoundLo
     log.debug(f"Inputs found: {', '.join((input.key for input in inputs))}")
 
     for input in inputs:
-        log = log.bind(input=input.name)
+        log = log.bind(input=input.key)
 
         rule = input.find_rule(settings.rules)
         if rule.ignore:
@@ -84,7 +84,7 @@ def process_input(repository: Repository, input: Input, rule: RuleSettings, log:
             return
 
     # Update flake input
-    repository.nix.flake.update(input.name)
+    repository.nix.flake.update(input.key)
 
     # Process changes
     if repository.is_dirty():
@@ -93,7 +93,7 @@ def process_input(repository: Repository, input: Input, rule: RuleSettings, log:
         # Reset to latest commit on base branch and apply update on top of that
         # This ensures that branches always contain a single commit and avoid merge conflicts
         repository.git.reset(base_branch_commit.id, hard=True)
-        repository.nix.flake.update(input.name)
+        repository.nix.flake.update(input.key)
 
         # Get new metadata after update
         new_metadata = repository.nix.flake.metadata(json=True)
@@ -138,7 +138,7 @@ def process_input(repository: Repository, input: Input, rule: RuleSettings, log:
         log.debug("Branch needs rebasing")
 
         repository.git.reset(base_branch_commit.id, hard=True)
-        repository.nix.flake.update(input.name)
+        repository.nix.flake.update(input.key)
 
         # Get new metadata after update
         new_metadata = repository.nix.flake.metadata(json=True)
